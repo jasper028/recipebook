@@ -6,8 +6,15 @@ plugins {
 
 android {
     namespace = "com.example.recipebookapp"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    compileSdk = 34 // Update this to match Flutter’s latest compile SDK
+
+    defaultConfig {
+        applicationId = "com.example.recipebookapp"
+        minSdk = 21 // Set a reasonable minSdk
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -15,31 +22,23 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-    }
-
-    defaultConfig {
-        applicationId = "com.example.recipebookapp"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        jvmTarget = "11"
     }
 
     signingConfigs {
-        release {
-            storeFile = file("android/app/keystore.jks") // Ensure correct keystore path
-            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "your-store-password"
-            keyAlias = System.getenv("KEY_ALIAS") ?: "your-key-alias"
-            keyPassword = System.getenv("KEY_PASSWORD") ?: "your-key-password"
+        create("release") {
+            storeFile = file("android/app/keystore.jks") // Ensure correct path
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
+            keyAlias = System.getenv("KEY_ALIAS") ?: ""
+            keyPassword = System.getenv("KEY_PASSWORD") ?: ""
         }
     }
 
     buildTypes {
-        release {
-            signingConfig = signingConfigs.getByName("release") // ✅ Use release keystore
-            minifyEnabled = true
-            shrinkResources = true
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true // Correct Kotlin DSL syntax
+            isShrinkResources = true // Correct Kotlin DSL syntax
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
