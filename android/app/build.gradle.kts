@@ -27,12 +27,13 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("android/app/keystore.jks") // Ensure correct path
+            storeFile = file(rootProject.file("app/keystore.jks")) // Ensure correct path
             storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
             keyAlias = System.getenv("KEY_ALIAS") ?: ""
             keyPassword = System.getenv("KEY_PASSWORD") ?: ""
         }
     }
+
 
     buildTypes {
         getByName("release") {
