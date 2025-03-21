@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -25,15 +28,20 @@ android {
         jvmTarget = "11"
     }
 
-    signingConfigs {
-        create("release") {
-            storeFile = file(rootProject.file("app/keystore.jks")) // Ensure correct path
-            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
-            keyAlias = System.getenv("KEY_ALIAS") ?: ""
-            keyPassword = System.getenv("KEY_PASSWORD") ?: ""
-        }
+    val keystorePropertiesFile = rootProject.file("key.properties")
+    val keystoreProperties = Properties()
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(FileInputStream(keystorePropertiesFile))
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(keystoreProperties["storeFile"]?.toString() ?: "app/keystore.jks") // Ensure correct path
+            storePassword = keystoreProperties["storePassword"]?.toString() ?: System.getenv("KEYSTORE_PASSWORD") ?: ""
+            keyAlias = keystoreProperties["keyAlias"]?.toString() ?: System.getenv("KEY_ALIAS") ?: ""
+            keyPassword = keystoreProperties["keyPassword"]?.toString() ?: System.getenv("KEY_PASSWORD") ?: ""
+        }
+    }
 
     buildTypes {
         getByName("release") {
