@@ -35,32 +35,16 @@ android {
     if (keystorePropertiesFile.exists()) {
         FileInputStream(keystorePropertiesFile).use { keystoreProperties.load(it) }
     } else {
-        println("Warning: key.properties file not found. Using environment variables instead.")
+        throw GradleException("key.properties file not found.")
     }
 
     signingConfigs {
         create("release") {
-            val storeFilePath = keystoreProperties["storeFile"]?.toString() ?: "android/app/keystore.jks"
-            val storeFile = rootProject.file(storeFilePath)
-
-            if (!storeFile.exists()) {
-                throw GradleException("Keystore file not found at: $storeFilePath")
-            }
-
-            // Store values in local immutable variables to prevent smart cast issues
-            val storePasswordVal = System.getenv("SIGNING_KEYSTORE_PASSWORD") ?: keystoreProperties["storePassword"]?.toString() ?: ""
-            val keyAliasVal = System.getenv("SIGNING_KEY_ALIAS") ?: keystoreProperties["keyAlias"]?.toString() ?: ""
-            val keyPasswordVal = System.getenv("SIGNING_KEY_PASSWORD") ?: keystoreProperties["keyPassword"]?.toString() ?: ""
-
-            // Assign to signingConfig
-            this.storeFile = storeFile
-            this.storePassword = storePasswordVal
-            this.keyAlias = keyAliasVal
-            this.keyPassword = keyPasswordVal
-
-            if (storePasswordVal.isBlank() || keyAliasVal.isBlank() || keyPasswordVal.isBlank()) {
-                throw GradleException("Keystore credentials are missing. Please check key.properties or environment variables.")
-            }
+            // Ensure the keystore path is correct relative to the project
+            storeFile = file(keystoreProperties["storeFile"] as String) // Path to keystore file
+            storePassword = keystoreProperties["storePassword"] as String
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
         }
     }
 
