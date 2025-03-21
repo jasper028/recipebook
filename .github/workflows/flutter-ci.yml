@@ -6,7 +6,7 @@ on:
       - main  # Change this to your main branch
   pull_request:
     branches:
-      - main  # Run on pull requests to the main branch
+      - main  # Run on pull requests to main branch
 
 jobs:
   build:
@@ -31,16 +31,16 @@ jobs:
 
       - name: Set Up Key Properties
         run: |
-          echo "storeFile=android/app/keystore.jks" > android/key.properties
+          echo "storeFile=keystore.jks" > android/key.properties
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
 
-      - name: Build Signed AAB
-        run: flutter build appbundle --release
+      - name: Build Signed APK
+        run: flutter build apk --release
 
-      - name: Upload AAB Artifact
-        uses: actions/upload-artifact@v4  # Updated to v4
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: app-release-aab
-          path: build/app/outputs/bundle/release/app-release.aab  # Correct path for the AAB
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
