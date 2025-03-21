@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoApp(
-      title: 'Recipe Book',
+      title: 'Recipe Books',
       theme: CupertinoThemeData(
         primaryColor: CupertinoColors.systemBlue,
       ),
