@@ -9,11 +9,11 @@ plugins {
 
 android {
     namespace = "com.example.recipebookapp"
-    compileSdk = 34 // Update this to match Flutter’s latest compile SDK
+    compileSdk = 34 // Match Flutter’s latest compile SDK
 
     defaultConfig {
         applicationId = "com.example.recipebookapp"
-        minSdk = 21 // Set a reasonable minSdk
+        minSdk = 21
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -28,6 +28,7 @@ android {
         jvmTarget = "11"
     }
 
+    // Load keystore properties
     val keystorePropertiesFile = rootProject.file("key.properties")
     val keystoreProperties = Properties()
 
@@ -40,18 +41,20 @@ android {
     signingConfigs {
         create("release") {
             val storeFilePath = keystoreProperties["storeFile"]?.toString() ?: "android/app/keystore.jks"
-            storeFile = file(rootProject.file(storeFilePath))
+            val storeFile = rootProject.file(storeFilePath)
 
-            val storePassword: String = System.getenv("KEYSTORE_PASSWORD") ?: keystoreProperties["storePassword"]?.toString() ?: ""
-            val keyAlias: String = System.getenv("KEY_ALIAS") ?: keystoreProperties["keyAlias"]?.toString() ?: ""
-            val keyPassword: String = System.getenv("KEY_PASSWORD") ?: keystoreProperties["keyPassword"]?.toString() ?: ""
+            if (!storeFile.exists()) {
+                throw GradleException("Keystore file not found at: $storeFilePath")
+            }
 
-            this.storePassword = storePassword
-            this.keyAlias = keyAlias
-            this.keyPassword = keyPassword
+            storePassword = System.getenv("SIGNING_KEYSTORE_PASSWORD") ?: keystoreProperties["storePassword"]?.toString() ?: ""
+            keyAlias = System.getenv("SIGNING_KEY_ALIAS") ?: keystoreProperties["keyAlias"]?.toString() ?: ""
+            keyPassword = System.getenv("SIGNING_KEY_PASSWORD") ?: keystoreProperties["keyPassword"]?.toString() ?: ""
 
-            if (storePassword.isEmpty() || keyAlias.isEmpty() || keyPassword.isEmpty()) {
-                println("Warning: Keystore credentials are missing or incorrect.")
+            this.storeFile = storeFile
+
+            if (storePassword.isBlank() || keyAlias.isBlank() || keyPassword.isBlank()) {
+                throw GradleException("Keystore credentials are missing. Please check key.properties or environment variables.")
             }
         }
     }
