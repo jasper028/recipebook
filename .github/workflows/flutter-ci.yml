@@ -6,7 +6,7 @@ on:
       - main  # Change this to your main branch
   pull_request:
     branches:
-      - main  # Run on pull requests to main branch
+      - main  # Run on pull requests to the main branch
 
 jobs:
   build:
@@ -36,13 +36,11 @@ jobs:
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
 
-      - name: Build Signed APK
-        run: flutter build apk --release
+      - name: Build Signed AAB
+        run: flutter build appbundle --release
 
-      - name: Upload APK Artifact
+      - name: Upload AAB Artifact
         uses: actions/upload-artifact@v4  # Updated to v4
         with:
-          name: app-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk  # Correct path for the APK
-
-
+          name: app-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab  # Correct path for the AAB
