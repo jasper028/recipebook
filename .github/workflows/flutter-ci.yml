@@ -14,33 +14,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the repository
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      # Set up Flutter
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: 3.x  # Change to your Flutter version
           cache: true
 
+      # Install Flutter dependencies
       - name: Install Dependencies
         run: flutter pub get
 
+      # Decode the Keystore from Base64 and save it
       - name: Decode Keystore from Base64
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/keystore.jks
 
+      # Set up the key properties
       - name: Set Up Key Properties
         run: |
-          echo "storeFile=keystore.jks" > android/key.properties
+          echo "storeFile=android/app/keystore.jks" > android/key.properties
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
 
+      # Debug the keystore properties (Optional for debugging)
+      - name: Debug Keystore Properties
+        run: |
+          echo "Keystore file path: android/app/keystore.jks"
+          echo "Store Password: [hidden]"
+          echo "Key Alias: ${{ secrets.KEY_ALIAS }}"
+          echo "Key Password: [hidden]"
+
+      # Build the signed AAB (Android App Bundle)
       - name: Build Signed AAB
         run: flutter build appbundle --release
 
+      # Upload the generated AAB as an artifact
       - name: Upload AAB Artifact
-        uses: actions/upload-artifact@v4  # Updated to v4
+        uses: actions/upload-artifact@v4
         with:
           name: app-release-aab
-          path: build/app/outputs/bundle/release/app-release.aab  # Correct path for the AAB
+          path: build/app/outputs/bundle/release/app-release.aab
