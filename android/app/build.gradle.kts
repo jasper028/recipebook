@@ -1,8 +1,7 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
-    id("dev.flutter.flutter-gradle-plugin")
+    id("dev.flutter.flutter-gradle-plugin") // Ensure Flutter plugin is last
 }
 
 android {
@@ -29,7 +28,7 @@ android {
 
     signingConfigs {
         release {
-            storeFile = file("keystore.jks") // Path to the keystore file
+            storeFile = file("android/app/keystore.jks") // Ensure correct keystore path
             storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "your-store-password"
             keyAlias = System.getenv("KEY_ALIAS") ?: "your-key-alias"
             keyPassword = System.getenv("KEY_PASSWORD") ?: "your-key-password"
@@ -38,7 +37,7 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("release") // ✅ Use release keystore
             minifyEnabled = true
             shrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
