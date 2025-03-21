@@ -47,13 +47,18 @@ android {
                 throw GradleException("Keystore file not found at: $storeFilePath")
             }
 
-            storePassword = System.getenv("SIGNING_KEYSTORE_PASSWORD") ?: keystoreProperties["storePassword"]?.toString() ?: ""
-            keyAlias = System.getenv("SIGNING_KEY_ALIAS") ?: keystoreProperties["keyAlias"]?.toString() ?: ""
-            keyPassword = System.getenv("SIGNING_KEY_PASSWORD") ?: keystoreProperties["keyPassword"]?.toString() ?: ""
+            // Store values in local immutable variables to prevent smart cast issues
+            val storePasswordVal = System.getenv("SIGNING_KEYSTORE_PASSWORD") ?: keystoreProperties["storePassword"]?.toString() ?: ""
+            val keyAliasVal = System.getenv("SIGNING_KEY_ALIAS") ?: keystoreProperties["keyAlias"]?.toString() ?: ""
+            val keyPasswordVal = System.getenv("SIGNING_KEY_PASSWORD") ?: keystoreProperties["keyPassword"]?.toString() ?: ""
 
+            // Assign to signingConfig
             this.storeFile = storeFile
+            this.storePassword = storePasswordVal
+            this.keyAlias = keyAliasVal
+            this.keyPassword = keyPasswordVal
 
-            if (storePassword.isBlank() || keyAlias.isBlank() || keyPassword.isBlank()) {
+            if (storePasswordVal.isBlank() || keyAliasVal.isBlank() || keyPasswordVal.isBlank()) {
                 throw GradleException("Keystore credentials are missing. Please check key.properties or environment variables.")
             }
         }
