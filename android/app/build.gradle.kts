@@ -40,13 +40,13 @@ android {
 
     signingConfigs {
         create("release") {
-            // Ensure the keystore path is correct relative to the project
-            storeFile = file(keystoreProperties["storeFile"] as String) // Path to keystore file
-            storePassword = keystoreProperties["storePassword"] as String
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = file(rootProject.file("android/app/keystore.jks"))
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: keystoreProperties["storePassword"]?.toString() ?: ""
+            keyAlias = System.getenv("KEY_ALIAS") ?: keystoreProperties["keyAlias"]?.toString() ?: ""
+            keyPassword = System.getenv("KEY_PASSWORD") ?: keystoreProperties["keyPassword"]?.toString() ?: ""
         }
     }
+
 
     buildTypes {
         getByName("release") {
