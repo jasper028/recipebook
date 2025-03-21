@@ -36,7 +36,7 @@ jobs:
       # Set up the key properties
       - name: Set Up Key Properties
         run: |
-          echo "storeFile=android/app/keystore.jks" > android/key.properties
+          echo "storeFile=keystore.jks" > android/key.properties
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
