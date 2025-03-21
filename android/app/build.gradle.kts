@@ -41,9 +41,14 @@ android {
         create("release") {
             val storeFilePath = keystoreProperties["storeFile"]?.toString() ?: "android/app/keystore.jks"
             storeFile = file(rootProject.file(storeFilePath))
-            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: keystoreProperties["storePassword"]?.toString() ?: ""
-            keyAlias = System.getenv("KEY_ALIAS") ?: keystoreProperties["keyAlias"]?.toString() ?: ""
-            keyPassword = System.getenv("KEY_PASSWORD") ?: keystoreProperties["keyPassword"]?.toString() ?: ""
+
+            val storePassword: String = System.getenv("KEYSTORE_PASSWORD") ?: keystoreProperties["storePassword"]?.toString() ?: ""
+            val keyAlias: String = System.getenv("KEY_ALIAS") ?: keystoreProperties["keyAlias"]?.toString() ?: ""
+            val keyPassword: String = System.getenv("KEY_PASSWORD") ?: keystoreProperties["keyPassword"]?.toString() ?: ""
+
+            this.storePassword = storePassword
+            this.keyAlias = keyAlias
+            this.keyPassword = keyPassword
 
             if (storePassword.isEmpty() || keyAlias.isEmpty() || keyPassword.isEmpty()) {
                 println("Warning: Keystore credentials are missing or incorrect.")
@@ -54,8 +59,8 @@ android {
     buildTypes {
         getByName("release") {
             signingConfig = signingConfigs.getByName("release")
-            isMinifyEnabled = true // Correct Kotlin DSL syntax
-            isShrinkResources = true // Correct Kotlin DSL syntax
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
