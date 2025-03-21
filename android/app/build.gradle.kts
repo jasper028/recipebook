@@ -30,18 +30,25 @@ android {
 
     val keystorePropertiesFile = rootProject.file("key.properties")
     val keystoreProperties = Properties()
+
     if (keystorePropertiesFile.exists()) {
-        keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+        FileInputStream(keystorePropertiesFile).use { keystoreProperties.load(it) }
+    } else {
+        println("Warning: key.properties file not found. Using environment variables instead.")
     }
 
     signingConfigs {
         create("release") {
-            storeFile = file(keystoreProperties["storeFile"]?.toString() ?: "app/keystore.jks") // Ensure correct path
-            storePassword = keystoreProperties["storePassword"]?.toString() ?: System.getenv("KEYSTORE_PASSWORD") ?: ""
-            keyAlias = keystoreProperties["keyAlias"]?.toString() ?: System.getenv("KEY_ALIAS") ?: ""
-            keyPassword = keystoreProperties["keyPassword"]?.toString() ?: System.getenv("KEY_PASSWORD") ?: ""
-        }
+            val storeFilePath = keystoreProperties["storeFile"]?.toString() ?: "android/app/keystore.jks"
+            storeFile = file(rootProject.file(storeFilePath))
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: keystoreProperties["storePassword"]?.toString() ?: ""
+            keyAlias = System.getenv("KEY_ALIAS") ?: keystoreProperties["keyAlias"]?.toString() ?: ""
+            keyPassword = System.getenv("KEY_PASSWORD") ?: keystoreProperties["keyPassword"]?.toString() ?: ""
 
+            if (storePassword.isEmpty() || keyAlias.isEmpty() || keyPassword.isEmpty()) {
+                println("Warning: Keystore credentials are missing or incorrect.")
+            }
+        }
     }
 
     buildTypes {
