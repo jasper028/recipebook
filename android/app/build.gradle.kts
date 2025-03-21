@@ -45,7 +45,8 @@ android {
             keyAlias = System.getenv("KEY_ALIAS") ?: keystoreProperties["keyAlias"]?.toString() ?: ""
             keyPassword = System.getenv("KEY_PASSWORD") ?: keystoreProperties["keyPassword"]?.toString() ?: ""
 
-            if (storePassword.isEmpty() || keyAlias.isEmpty() || keyPassword.isEmpty()) {
+            // Explicitly check if these properties are not empty
+            if (storePassword.isNullOrEmpty() || keyAlias.isNullOrEmpty() || keyPassword.isNullOrEmpty()) {
                 println("Warning: Keystore credentials are missing or incorrect.")
             }
         }
