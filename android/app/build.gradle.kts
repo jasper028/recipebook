@@ -9,11 +9,11 @@ plugins {
 
 android {
     namespace = "com.example.recipebookapp"
-    compileSdk = 34 // Match Flutter’s latest compile SDK
+    compileSdk = 34 // Update this to match Flutter’s latest compile SDK
 
     defaultConfig {
         applicationId = "com.example.recipebookapp"
-        minSdk = 21
+        minSdk = 21 // Set a reasonable minSdk
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -28,35 +28,35 @@ android {
         jvmTarget = "11"
     }
 
-    // Load keystore properties
     val keystorePropertiesFile = rootProject.file("key.properties")
     val keystoreProperties = Properties()
 
     if (keystorePropertiesFile.exists()) {
         FileInputStream(keystorePropertiesFile).use { keystoreProperties.load(it) }
     } else {
-        throw GradleException("key.properties file not found.")
+        println("Warning: key.properties file not found. Using environment variables instead.")
     }
 
     signingConfigs {
         create("release") {
-            storeFile = file(rootProject.file("android/app/keystore.jks"))
+            val storeFilePath = keystoreProperties["storeFile"]?.toString() ?: "android/app/keystore.jks"
+            storeFile = file(rootProject.file(storeFilePath))
             storePassword = System.getenv("KEYSTORE_PASSWORD") ?: keystoreProperties["storePassword"]?.toString() ?: ""
             keyAlias = System.getenv("KEY_ALIAS") ?: keystoreProperties["keyAlias"]?.toString() ?: ""
             keyPassword = System.getenv("KEY_PASSWORD") ?: keystoreProperties["keyPassword"]?.toString() ?: ""
+
+            if (storePassword.isEmpty() || keyAlias.isEmpty() || keyPassword.isEmpty()) {
+                println("Warning: Keystore credentials are missing or incorrect.")
+            }
         }
     }
-
 
     buildTypes {
         getByName("release") {
             signingConfig = signingConfigs.getByName("release")
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            isMinifyEnabled = true // Correct Kotlin DSL syntax
+            isShrinkResources = true // Correct Kotlin DSL syntax
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 }
