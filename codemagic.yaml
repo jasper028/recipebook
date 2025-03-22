@@ -8,7 +8,7 @@ workflows:
       xcode: latest
       cocoapods: default
       groups:
-        - signin_cred  # Use the new name here without space
+        - signin cred  # Use the new name here without space
     scripts:
       - name: Install Flutter dependencies
         script: flutter pub get
