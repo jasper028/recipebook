@@ -8,11 +8,10 @@ workflows:
       xcode: latest
       cocoapods: default
       groups:
-        - signing_credentials
+        - signin_cred  # Use the new name here without space
     scripts:
       - name: Install Flutter dependencies
         script: flutter pub get
-
 
       - name: Decode Keystore File
         script: echo $CM_KEYSTORE | base64 --decode > android/my-release-key.jks
@@ -22,7 +21,7 @@ workflows:
           echo "storePassword=$CM_STORE_PASSWORD" > android/app/key.properties
           echo "keyPassword=$CM_KEY_PASSWORD" >> android/app/key.properties
           echo "keyAlias=$CM_KEY_ALIAS" >> android/app/key.properties
-          echo "storeFile=./upload-keystore.jks" >> android/app/key.properties
+          echo "storeFile=android/my-release-key.jks" >> android/app/key.properties
 
       - name: Build Android APK
         script: flutter build apk --release
